@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yudhtech Business Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b; padding-bottom: 100px; }
+        .card-custom { background: white; border-radius: 1.5rem; border: 1px solid #e2e8f0; padding: 1.25rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .input-box { border: 2px solid #e2e8f0 !important; border-radius: 0.75rem; padding: 0.75rem; width: 100%; outline: none; transition: 0.3s; }
+        .input-box:focus { border-color: #3b82f6 !important; background: #f0f7ff; }
+        .nav-item.active { color: #3b82f6; }
+        .watermark { position: fixed; bottom: 85px; left: 20px; font-size: 9px; font-weight: 800; color: #cbd5e1; z-index: 40; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div class="watermark uppercase">DEVELOP BY YUDHTECH</div>
+
+    <header class="bg-white border-b p-4 sticky top-0 z-50 flex justify-between items-center shadow-sm">
+        <div>
+            <h1 class="font-bold text-blue-600">YUDHTECH <span class="text-slate-400 font-normal">BIZ</span></h1>
+            <p id="current-tab-name" class="text-[10px] font-bold uppercase text-slate-400">Dashboard HPP</p>
+        </div>
+        <button onclick="resetAll()" class="text-red-500 text-xs font-bold bg-red-50 px-3 py-1 rounded-lg">RESET</button>
+    </header>
+
+    <main class="max-w-xl mx-auto p-4 space-y-6">
+
+        <div id="tab-hpp" class="tab-content space-y-4">
+            <div class="card-custom">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-4">Produksi & Margin</h3>
+                <div class="space-y-3">
+                    <input type="number" id="hpp-bahan" oninput="logicHPP()" class="input-box" placeholder="Biaya Bahan Baku (Rp)">
+                    <input type="number" id="hpp-buruh" oninput="logicHPP()" class="input-box" placeholder="Biaya Tenaga Kerja (Rp)">
+                    <input type="number" id="hpp-overhead" oninput="logicHPP()" class="input-box" placeholder="Biaya Overhead (Rp)">
+                    <div class="pt-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Margin Keuntungan: <span id="lbl-margin">30%</span></label>
+                        <input type="range" id="inp-margin" oninput="logicHPP()" min="5" max="90" value="30" class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                    </div>
+                </div>
+            </div>
+            <div class="bg-blue-600 p-6 rounded-[2rem] text-white shadow-lg relative overflow-hidden">
+                <p class="text-xs opacity-80 uppercase font-bold">Rekomendasi Jual</p>
+                <h2 id="res-jual" class="text-3xl font-black">Rp 0</h2>
+                <p class="text-[10px] mt-2 italic border-t border-white/20 pt-2">HPP Unit: <span id="res-hpp-val">Rp 0</span></p>
+                <i class="fas fa-tags absolute -right-4 -bottom-4 text-8xl opacity-10"></i>
+            </div>
+        </div>
+
+        <div id="tab-bep" class="tab-content hidden space-y-4">
+            <div class="card-custom">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-4">Analisis Titik Impas</h3>
+                <div class="space-y-4">
+                    <input type="number" id="bep-tetap" oninput="logicBEP()" class="input-box" placeholder="Biaya Tetap Bulanan (Sewa/Gaji)">
+                    <p class="text-[10px] text-blue-600 font-bold">* Menggunakan data Harga Jual & HPP dari menu pertama.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-900 p-5 rounded-3xl text-white text-center">
+                    <p class="text-[10px] uppercase opacity-60">Target Jual</p>
+                    <h4 id="res-bep-unit" class="text-2xl font-bold">0</h4>
+                    <p class="text-[10px]">Unit / Bulan</p>
+                </div>
+                <div class="bg-emerald-600 p-5 rounded-3xl text-white text-center">
+                    <p class="text-[10px] uppercase opacity-60">Omzet Impas</p>
+                    <h4 id="res-bep-idr" class="text-lg font-bold">Rp 0</h4>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-stok" class="tab-content hidden space-y-4">
+            <div class="card-custom">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-4">Manajemen Stok Barang</h3>
+                <div class="space-y-3">
+                    <input type="number" id="stok-total" oninput="logicStok()" class="input-box" placeholder="Jumlah Stok Tersedia (Unit)">
+                    <div class="p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                        <p class="text-[10px] font-bold text-orange-600 uppercase">Nilai Aset Stok (HPP)</p>
+                        <h4 id="res-stok-aset" class="text-xl font-black text-orange-700">Rp 0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="shareAll()" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 active:scale-95 transition">
+            <i class="fab fa-whatsapp text-xl"></i> BAGIKAN LAPORAN LENGKAP
+        </button>
+
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-3 z-50">
+        <button onclick="switchTab('hpp')" id="nav-hpp" class="nav-item active flex flex-col items-center">
+            <i class="fas fa-calculator text-lg"></i><span class="text-[10px] font-bold">HPP</span>
+        </button>
+        <button onclick="switchTab('bep')" id="nav-bep" class="nav-item flex flex-col items-center text-slate-400">
+            <i class="fas fa-sync-alt text-lg"></i><span class="text-[10px] font-bold">BEP</span>
+        </button>
+        <button onclick="switchTab('stok')" id="nav-stok" class="nav-item flex flex-col items-center text-slate-400">
+            <i class="fas fa-boxes text-lg"></i><span class="text-[10px] font-bold">STOK</span>
+        </button>
+    </nav>
+
+    <script>
+        // Global State
+        let state = { hpp: 0, jual: 0, margin: 30 };
+        const formatIDR = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+
+        function switchTab(t) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + t).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.add('text-slate-400'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + t).classList.add('active');
+            document.getElementById('nav-' + t).classList.remove('text-slate-400');
+            document.getElementById('current-tab-name').innerText = 'DASHBOARD ' + t.toUpperCase();
+        }
+
+        function logicHPP() {
+            const b = parseFloat(document.getElementById('hpp-bahan').value) || 0;
+            const l = parseFloat(document.getElementById('hpp-buruh').value) || 0;
+            const o = parseFloat(document.getElementById('hpp-overhead').value) || 0;
+            state.margin = document.getElementById('inp-margin').value;
+            
+            state.hpp = b + l + o;
+            state.jual = state.hpp > 0 ? state.hpp / (1 - (state.margin/100)) : 0;
+
+            document.getElementById('lbl-margin').innerText = state.margin + '%';
+            document.getElementById('res-hpp-val').innerText = formatIDR(state.hpp);
+            document.getElementById('res-jual').innerText = formatIDR(state.jual);
+            saveData();
+            logicBEP(); // Update BEP juga
+            logicStok(); // Update Stok Aset juga
+        }
+
+        function logicBEP() {
+            const fixed = parseFloat(document.getElementById('bep-tetap').value) || 0;
+            if (state.jual > state.hpp) {
+                const unit = Math.ceil(fixed / (state.jual - state.hpp));
+                document.getElementById('res-bep-unit').innerText = unit.toLocaleString();
+                document.getElementById('res-bep-idr').innerText = formatIDR(unit * state.jual);
+            }
+            saveData();
+        }
+
+        function logicStok() {
+            const qty = parseFloat(document.getElementById('stok-total').value) || 0;
+            document.getElementById('res-stok-aset').innerText = formatIDR(qty * state.hpp);
+            saveData();
+        }
+
+        function shareAll() {
+            const teks = `*LAPORAN BISNIS TERPADU (YUDHTECH)*\n\n` +
+                         `📌 *ANALISIS HPP*\n` +
+                         `- HPP Unit: ${formatIDR(state.hpp)}\n` +
+                         `- Harga Jual: ${formatIDR(state.jual)} (Margin ${state.margin}%)\n\n` +
+                         `📈 *TITIK IMPAS (BEP)*\n` +
+                         `- Target Jual: ${document.getElementById('res-bep-unit').innerText} Unit/Bulan\n` +
+                         `- Omzet Impas: ${document.getElementById('res-bep-idr').innerText}\n\n` +
+                         `📦 *INVENTORI*\n` +
+                         `- Nilai Aset Stok: ${document.getElementById('res-stok-aset').innerText}\n\n` +
+                         `_Analisis by Yudhtech Business Suite_`;
+            window.open(`https://wa.me?text=${encodeURIComponent(teks)}`, '_blank');
+        }
+
+        function saveData() {
+            const allData = {
+                b: document.getElementById('hpp-bahan').value,
+                l: document.getElementById('hpp-buruh').value,
+                o: document.getElementById('hpp-overhead').value,
+                m: document.getElementById('inp-margin').value,
+                bt: document.getElementById('bep-tetap').value,
+                st: document.getElementById('stok-total').value
+            };
+            localStorage.setItem('yudhtech_master_data', JSON.stringify(allData));
+        }
+
+        function loadData() {
+            const d = JSON.parse(localStorage.getItem('yudhtech_master_data'));
+            if(d) {
+                document.getElementById('hpp-bahan').value = d.b;
+                document.getElementById('hpp-buruh').value = d.l;
+                document.getElementById('hpp-overhead').value = d.o;
+                document.getElementById('inp-margin').value = d.m;
+                document.getElementById('bep-tetap').value = d.bt;
+                document.getElementById('stok-total').value = d.st;
+                logicHPP();
+            }
+        }
+
+        function resetAll() { if(confirm("Hapus semua data bisnis?")) { localStorage.clear(); location.reload(); } }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
